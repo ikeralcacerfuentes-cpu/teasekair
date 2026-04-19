@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Kair · Crear perfil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="8c7efe3e-851a-48e5-860c-4e7d2a115a6b"></script>
+  <style>
+    :root {
+      --bg: #FAFAF8; --card: #ffffff; --accent: #2ac6a8; --accent-dark: #1B3A2A;
+      --text-main: #111820; --text-muted: #6b7280; --text-light: #9ca3af;
+      --border: #e8e8e4; --border-soft: #f0f0ec;
+      --danger: #b91c1c; --danger-soft: #fef2f2;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
+      background: var(--bg); color: var(--text-main);
+      display: flex; justify-content: center;
+      padding: 40px 16px 60px; -webkit-font-smoothing: antialiased;
+    }
+    .shell { width: 100%; max-width: 720px; }
+    .header { margin-bottom: 32px; }
+    .kair-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .kair-wordmark { font-size: 1rem; font-weight: 200; letter-spacing: 0.28em; color: var(--text-main); }
+    h1 { font-size: 1.6rem; font-weight: 300; color: var(--text-main); margin-bottom: 8px; letter-spacing: -0.01em; }
+    .subtitle { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; max-width: 560px; }
+    .lang-row { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+    .lang-select { border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; font-size: 0.78rem; font-family: inherit; background: var(--card); color: var(--text-main); cursor: pointer; outline: none; }
+    .lang-select:focus { border-color: var(--accent-dark); }
+    .card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 28px 32px 32px; position: relative; overflow: hidden; }
+    @media(max-width:640px){ .card { padding: 20px 18px 24px; } }
+    .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .progress-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-light); }
+    .progress-steps { display: flex; align-items: center; gap: 6px; }
+    .progress-step-label { font-size: 0.72rem; color: var(--text-muted); margin-right: 8px; }
+    .step-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); border: 1px solid #ddd; }
+    .step-dot.active { background: var(--accent-dark); border-color: var(--accent-dark); }
+    .step-dot.optional { background: var(--border); border-color: #ccc; opacity: 0.6; }
+    .step-dot.optional.active { background: var(--accent); border-color: var(--accent); opacity: 1; }
+    .step-dot.done { background: var(--accent); border-color: var(--accent); }
+    .step { display: none; animation: fadeUp 0.16s ease-out; }
+    .step.active { display: block; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);} }
+    fieldset { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px 18px; margin-bottom: 16px; background: var(--bg); }
+    legend { padding: 0 6px; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-light); }
+    .field-header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+    .field-title { font-size: 0.92rem; font-weight: 500; color: var(--text-main); }
+    .field-badge { font-size: 0.68rem; color: var(--text-light); background: var(--card); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+    .field-desc { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6; }
+    .question { margin: 0 0 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border-soft); }
+    .question:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+    .q-label { display: block; font-size: 0.84rem; margin-bottom: 8px; color: var(--text-main); line-height: 1.4; }
+    .required { color: var(--danger); margin-left: 2px; }
+    .options { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 4px; }
+    .options label { font-size: 0.8rem; cursor: pointer; color: var(--text-main); display: flex; align-items: center; gap: 5px; }
+    .checkboxes { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 6px; }
+    .checkboxes label { font-size: 0.8rem; cursor: pointer; color: var(--text-main); display: flex; align-items: center; gap: 5px; min-width: 200px; }
+    input[type="radio"] { accent-color: var(--accent-dark); cursor: pointer; }
+    input[type="checkbox"] { accent-color: var(--accent-dark); cursor: pointer; }
+    input[type="text"], input[type="number"], input[type="email"] {
+      background: var(--card); border-radius: 6px; border: 1px solid var(--border);
+      padding: 8px 12px; color: var(--text-main); font-size: 0.84rem;
+      min-width: 160px; font-family: inherit; outline: none;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, input[type="email"]:focus { border-color: var(--accent-dark); }
+    .info-box { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: rgba(42,198,168,0.05); border-left: 2px solid var(--accent); font-size: 0.76rem; color: #065f46; line-height: 1.5; }
+    .help-box { display: none; border-radius: 8px; padding: 10px 12px; margin-top: 10px; background: var(--danger-soft); border: 1px solid rgba(185,28,28,0.15); color: #7f1d1d; font-size: 0.78rem; line-height: 1.6; }
+    .callout { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: rgba(42,198,168,0.05); border-left: 2px solid var(--accent); font-size: 0.78rem; color: #065f46; line-height: 1.5; }
+    .sensitive-label { color: #7f1d1d; }
+    .optional-banner { margin-bottom: 16px; padding: 10px 14px; border-radius: 8px; background: rgba(42,198,168,0.05); border: 1px solid rgba(42,198,168,0.2); font-size: 0.78rem; color: #065f46; line-height: 1.5; display: none; }
+    .optional-banner.visible { display: block; }
+    .nav-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+    .nav-btns { display: flex; gap: 8px; }
+    .btn { border-radius: 6px; padding: 9px 20px; font-size: 0.82rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; letter-spacing: 0.03em; transition: background 0.15s; }
+    .btn-back { background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); }
+    .btn-back:hover { border-color: var(--accent-dark); color: var(--accent-dark); }
+    .btn-next { background: var(--accent-dark); color: #fff; font-weight: 500; }
+    .btn-next:disabled { opacity: 0.5; cursor: default; }
+    .btn-next:hover:not(:disabled) { background: #142d20; }
+    .btn-skip { background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-size: 0.78rem; }
+    .btn-skip:hover { border-color: var(--text-muted); }
+    .status-text { font-size: 0.72rem; color: var(--text-light); }
+    .status-text.ok { color: var(--accent); }
+    .status-text.error { color: var(--danger); }
+    .thankyou { display: none; text-align: center; padding: 48px 24px; }
+    .thankyou-title { font-size: 1.4rem; font-weight: 300; margin-bottom: 10px; color: var(--text-main); }
+    .thankyou-body { font-size: 0.85rem; color: var(--text-muted); max-width: 440px; margin: 0 auto 20px; line-height: 1.7; }
+    .uid-display { font-size: 1.5rem; font-weight: 400; color: var(--accent-dark); margin: 16px 0; padding: 14px 24px; background: rgba(27,58,42,0.05); border-radius: 10px; letter-spacing: 0.1em; display: inline-block; }
+    .btn-goto { display: inline-block; margin-top: 8px; padding: 10px 24px; border-radius: 6px; background: var(--accent-dark); color: #fff; font-weight: 500; text-decoration: none; font-size: 0.84rem; letter-spacing: 0.04em; }
+    .modal-backdrop { position: absolute; inset: 0; background: rgba(17,24,32,0.35); display: none; align-items: center; justify-content: center; z-index: 20; padding: 20px; }
+    .modal-backdrop.active { display: flex; }
+    .modal-box { max-width: 420px; width: 100%; background: var(--card); border-radius: 14px; padding: 22px 24px; border: 1px solid rgba(185,28,28,0.2); box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+    .modal-title { font-size: 0.92rem; font-weight: 500; color: #7f1d1d; margin-bottom: 10px; }
+    .modal-body { font-size: 0.8rem; color: #7f1d1d; line-height: 1.7; margin-bottom: 16px; }
+    .modal-close { border: 1px solid rgba(185,28,28,0.2); border-radius: 6px; padding: 7px 16px; background: transparent; color: #7f1d1d; font-size: 0.78rem; cursor: pointer; font-family: inherit; }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header class="header">
+    <div class="lang-row">
+      <select class="lang-select" id="langSelect" onchange="setLang(this.value)">
+        <option value="es">Castellano</option>
+        <option value="va">Valencià</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+    <div class="kair-logo">
+      <svg width="26" height="26" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <line x1="34" y1="15" x2="34" y2="85" stroke="#1B3A2A" stroke-width="7" stroke-linecap="round"/>
+        <line x1="41" y1="38" x2="72" y2="15" stroke="#1B3A2A" stroke-width="7" stroke-linecap="round"/>
+        <line x1="41" y1="62" x2="72" y2="85" stroke="#1B3A2A" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="54" cy="50" r="7.5" fill="#2ac6a8"/>
+      </svg>
+      <span class="kair-wordmark">kair</span>
+    </div>
+    <h1 id="headerTitle">Crea tu perfil</h1>
+    <p class="subtitle" id="headerSubtitle">Completa el formulario para recibir recomendaciones adaptadas a ti.</p>
+  </header>
+
+  <main class="card">
+    <!-- SAFETY MODAL -->
+    <div class="modal-backdrop" id="safetyModal">
+      <div class="modal-box">
+        <div class="modal-title" id="safetyModalTitle">Gracias por compartir cómo te sientes</div>
+        <div class="modal-body" id="safetyModalBody">
+          <p style="margin-bottom:8px;" id="safetyP1">Lo que has marcado indica un nivel de malestar que merece atención. No tienes que llevarlo solo/a.</p>
+          <p style="margin-bottom:8px;" id="safetyP2">En España puedes llamar al <strong>024</strong>, línea gratuita y confidencial de atención a la conducta suicida, disponible las 24 horas.</p>
+          <p id="safetyP3">También puedes acudir a tu centro de salud o contactar con un profesional de la psicología.</p>
+        </div>
+        <button class="modal-close" id="safetyClose" onclick="document.getElementById('safetyModal').classList.remove('active')">Cerrar</button>
+      </div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="progress-header">
+      <span class="progress-label" id="progressLabel">Progreso</span>
+      <div class="progress-steps">
+        <span class="progress-step-label" id="stepLabel">Paso 1 de 7</span>
+        <span class="step-dot active" data-dot="0"></span>
+        <span class="step-dot" data-dot="1"></span>
+        <span class="step-dot optional" data-dot="2"></span>
+        <span class="step-dot optional" data-dot="3"></span>
+        <span class="step-dot optional" data-dot="4"></span>
+        <span class="step-dot optional" data-dot="5"></span>
+        <span class="step-dot optional" data-dot="6"></span>
+      </div>
+    </div>
+
+    <!-- Banner pasos opcionales -->
+    <div class="optional-banner" id="optionalBanner"></div>
+
+    <form id="kairForm">
+
+      <!-- STEP 0: CONSENTIMIENTO -->
+      <section class="step active" data-step="0">
+        <fieldset>
+          <legend id="leg_consent">Consentimiento</legend>
+          <div class="field-header">
+            <div class="field-title" id="consent_title">Consentimiento informado</div>
+            <div class="field-badge" id="consent_badge">Obligatorio</div>
+          </div>
+          <p class="field-desc" id="consent_desc">Kair recoge información sobre tu bienestar emocional, alimentación y personalidad para ofrecerte recomendaciones personalizadas. Tu participación es voluntaria, tus datos son anónimos y puedes retirar tu consentimiento en cualquier momento.</p>
+          <div class="question">
+            <label class="q-label" id="consent_q">¿Aceptas participar?<span class="required">*</span></label>
+            <div class="options">
+              <label><input type="radio" name="consent" value="si" required/> <span id="consent_yes">Sí, acepto</span></label>
+              <label><input type="radio" name="consent" value="no"/> <span id="consent_no">No deseo participar</span></label>
+            </div>
+          </div>
+        </fieldset>
+      </section>
+
+      <!-- STEP 1: DATOS GENERALES -->
+      <section class="step" data-step="1">
+        <fieldset>
+          <legend id="leg_general">Datos generales</legend>
+          <div class="field-header">
+            <div class="field-title" id="general_title">Información básica</div>
+            <div class="field-badge" id="general_badge">~1 minuto</div>
+          </div>
+          <div class="question">
+            <label class="q-label" for="uid" id="uid_label">Elige tu ID personal<span class="required">*</span></label>
+            <input id="uid" name="uid" type="text" maxlength="20" required/>
+            <p style="font-size:0.74rem;color:var(--text-muted);margin-top:6px;line-height:1.5;" id="uid_help">Crea un código que solo tú conozcas. Lo usarás para acceder a la app cada día y ver tu evolución.</p>
+          </div>
+          <div class="question">
+            <label class="q-label" for="edad" id="edad_label">Edad<span class="required">*</span></label>
+            <input id="edad" name="edad" type="number" min="16" max="120" required/>
+          </div>
+          <div class="question">
+            <label class="q-label" id="genero_label">Género<span class="required">*</span></label>
+            <div class="options">
+              <label><input type="radio" name="genero" value="Hombre" required/> <span id="gen_h">Hombre</span></label>
+              <label><input type="radio" name="genero" value="Mujer"/> <span id="gen_m">Mujer</span></label>
+              <label><input type="radio" name="genero" value="No binario"/> <span id="gen_nb">No binario</span></label>
+              <label><input type="radio" name="genero" value="Prefiero no decirlo"/> <span id="gen_nd">Prefiero no decirlo</span></label>
+            </div>
+          </div>
+          <div class="question">
+            <label class="q-label" for="pais" id="pais_label">País de residencia</label>
+            <input id="pais" name="pais" type="text"/>
+          </div>
+          <div class="question">
+            <label class="q-label" for="emailField" id="email_label">Email (opcional)<span style="font-size:0.72rem;color:var(--text-muted);margin-left:4px;" id="email_help_inline"></span></label>
+            <input id="emailField" name="email" type="email" style="width:100%;max-width:360px;"/>
+            <p style="font-size:0.74rem;color:var(--text-muted);margin-top:6px;line-height:1.5;" id="email_help">Añade tu email para poder recuperar tu ID si lo pierdes. Solo se usa para eso, nunca para marketing.</p>
+          </div>
+        </fieldset>
+      </section>
+
+      <!-- STEP 2: SALUD Y MEDICACIÓN -->
+      <section class="step" data-step="2">
+        <fieldset>
+          <legend id="leg_salud">Salud</legend>
+          <div class="field-header">
+            <div class="field-title" id="salud_title">Condiciones de salud</div>
+            <div class="field-badge" id="salud_badge">Opcional</div>
+          </div>
+          <p class="field-desc" id="salud_desc">Esta información es opcional y solo se usa para personalizar tus recomendaciones evitando posibles interacciones. Kair no es un servicio médico.</p>
+          <div class="question">
+            <label class="q-label" id="salud_q">¿Tienes alguna condición de salud diagnosticada?</label>
+            <div class="checkboxes">
+              <label><input type="checkbox" name="condicion" value="diabetes_t2"/> <span id="cond_dm">Diabetes tipo 2</span></label>
+              <label><input type="checkbox" name="condicion" value="hipertension"/> <span id="cond_hta">Hipertensión</span></label>
+              <label><input type="checkbox" name="condicion" value="hipotiroidismo"/> <span id="cond_tsh">Hipotiroidismo</span></label>
+              <label><input type="checkbox" name="condicion" value="sii"/> <span id="cond_sii">SII (intestino irritable)</span></label>
+              <label><input type="checkbox" name="condicion" value="fibromialgia"/> <span id="cond_fibro">Fibromialgia</span></label>
+              <label><input type="checkbox" name="condicion" value="depresion_diag"/> <span id="cond_dep">Depresión diagnosticada</span></label>
+              <label><input type="checkbox" name="condicion" value="ansiedad_diag"/> <span id="cond_anx">Ansiedad diagnosticada</span></label>
+              <label><input type="checkbox" name="condicion" value="tdah"/> <span id="cond_tdah">TDAH</span></label>
+              <label><input type="checkbox" name="condicion" value="ninguna"/> <span id="cond_none">Ninguna</span></label>
+              <label><input type="checkbox" name="condicion" value="prefiero_no"/> <span id="cond_pref">Prefiero no indicarlo</span></label>
+            </div>
+            <div style="margin-top:10px;">
+              <label style="font-size:0.78rem;color:var(--text-muted);display:block;margin-bottom:4px;" id="cond_otras_label">Otras condiciones no listadas</label>
+              <input type="text" id="cond_otras" style="width:100%;max-width:420px;"/>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend id="leg_med">Medicación</legend>
+          <div class="field-header">
+            <div class="field-title" id="med_title">Medicación habitual</div>
+            <div class="field-badge" id="med_badge">Opcional</div>
+          </div>
+          <div class="question">
+            <label class="q-label" id="med_q">¿Tomas algún medicamento de forma habitual?</label>
+            <div class="checkboxes">
+              <label><input type="checkbox" name="medicacion" value="antidepresivos_ansioliticos"/> <span id="med_ad">Antidepresivos / ansiolíticos</span></label>
+              <label><input type="checkbox" name="medicacion" value="anticoagulantes"/> <span id="med_ac">Anticoagulantes</span></label>
+              <label><input type="checkbox" name="medicacion" value="inmunosupresores"/> <span id="med_is">Inmunosupresores</span></label>
+              <label><input type="checkbox" name="medicacion" value="anticonceptivos_hormonales"/> <span id="med_ah">Anticonceptivos hormonales</span></label>
+              <label><input type="checkbox" name="medicacion" value="medicacion_tiroidea"/> <span id="med_tir">Medicación tiroidea</span></label>
+              <label><input type="checkbox" name="medicacion" value="ibp_omeprazol"/> <span id="med_ibp">IBP (omeprazol y similares)</span></label>
+              <label><input type="checkbox" name="medicacion" value="ninguno"/> <span id="med_none">Ninguno</span></label>
+              <label><input type="checkbox" name="medicacion" value="prefiero_no"/> <span id="med_pref">Prefiero no indicarlo</span></label>
+            </div>
+            <div style="margin-top:10px;">
+              <label style="font-size:0.78rem;color:var(--text-muted);display:block;margin-bottom:4px;" id="med_otras_label">Otros medicamentos</label>
+              <input type="text" id="med_otras" style="width:100%;max-width:420px;"/>
+            </div>
+          </div>
+          <div class="info-box" id="salud_info_box">Esta información solo se usa para evitar recomendaciones que puedan interactuar con tu medicación.</div>
+        </fieldset>
+      </section>
+
+      <!-- STEP 3: CSE-12 -->
+      <section class="step" data-step="3">
+        <fieldset>
+          <legend id="leg_cse">Cuerpo y emoción</legend>
+          <div class="field-header">
+            <div class="field-title" id="cse_title">CSE-12 · Última semana</div>
+            <div class="field-badge" id="cse_badge">12 ítems</div>
+          </div>
+          <p class="field-desc" id="cse_scale">0 = Nunca &nbsp;·&nbsp; 1 = A veces &nbsp;·&nbsp; 2 = A menudo &nbsp;·&nbsp; 3 = Casi siempre</p>
+          <div class="question"><label class="q-label" id="cse1_q">1. He sentido mi cuerpo más tenso, rígido o contraído de lo habitual.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cse1" value="0" required/>0</label><label><input type="radio" name="cse1" value="1"/>1</label><label><input type="radio" name="cse1" value="2"/>2</label><label><input type="radio" name="cse1" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cse2_q">2. He notado mi energía corporal baja, apagada o inestable.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cse2" value="0" required/>0</label><label><input type="radio" name="cse2" value="1"/>1</label><label><input type="radio" name="cse2" value="2"/>2</label><label><input type="radio" name="cse2" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cse3_q">3. Mi respiración, digestión o ritmo corporal se han alterado en momentos de tensión.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cse3" value="0" required/>0</label><label><input type="radio" name="cse3" value="1"/>1</label><label><input type="radio" name="cse3" value="2"/>2</label><label><input type="radio" name="cse3" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cse4_q">4. Me ha costado desconectar el cuerpo o la mente al final del día.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cse4" value="0" required/>0</label><label><input type="radio" name="cse4" value="1"/>1</label><label><input type="radio" name="cse4" value="2"/>2</label><label><input type="radio" name="cse4" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cse5_q">5. He notado un exceso de ruido interno (pensamientos, tensión o inquietud).<span class="required">*</span></label><div class="options"><label><input type="radio" name="cse5" value="0" required/>0</label><label><input type="radio" name="cse5" value="1"/>1</label><label><input type="radio" name="cse5" value="2"/>2</label><label><input type="radio" name="cse5" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cse6_q">6. He sentido mi cuerpo en alerta o reaccionando más rápido de lo normal.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cse6" value="0" required/>0</label><label><input type="radio" name="cse6" value="1"/>1</label><label><input type="radio" name="cse6" value="2"/>2</label><label><input type="radio" name="cse6" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cse7_q">7. Mi atención ha estado dispersa o desconectada del momento presente.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cse7" value="0" required/>0</label><label><input type="radio" name="cse7" value="1"/>1</label><label><input type="radio" name="cse7" value="2"/>2</label><label><input type="radio" name="cse7" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cse8_q">8. He realizado tareas con poca presencia corporal o en modo automático.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cse8" value="0" required/>0</label><label><input type="radio" name="cse8" value="1"/>1</label><label><input type="radio" name="cse8" value="2"/>2</label><label><input type="radio" name="cse8" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cse9_q">9. Me ha costado conectar o resonar con otras personas como suelo hacerlo.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cse9" value="0" required/>0</label><label><input type="radio" name="cse9" value="1"/>1</label><label><input type="radio" name="cse9" value="2"/>2</label><label><input type="radio" name="cse9" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cse10_q">10. He sentido un peso emocional en el cuerpo (tristeza, vacío, bajón).<span class="required">*</span></label><div class="options"><label><input type="radio" name="cse10" value="0" required/>0</label><label><input type="radio" name="cse10" value="1"/>1</label><label><input type="radio" name="cse10" value="2"/>2</label><label><input type="radio" name="cse10" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cse11_q">11. Me ha resultado difícil tratarme con suavidad o amabilidad.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cse11" value="0" required/>0</label><label><input type="radio" name="cse11" value="1"/>1</label><label><input type="radio" name="cse11" value="2"/>2</label><label><input type="radio" name="cse11" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cse12_q">12. Mi motivación o dirección emocional han estado apagadas.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cse12" value="0" required/>0</label><label><input type="radio" name="cse12" value="1"/>1</label><label><input type="radio" name="cse12" value="2"/>2</label><label><input type="radio" name="cse12" value="3"/>3</label></div></div>
+          <div class="question" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+            <label class="q-label sensitive-label" id="cse_s1_q">Pregunta confidencial: En algún momento de esta semana he sentido ganas de desaparecer o desconectar de todo.<span class="required">*</span></label>
+            <div class="options">
+              <label><input type="radio" name="cse_s1" value="0" required/>0 · <span id="cse_s1_0">Nunca</span></label>
+              <label><input type="radio" name="cse_s1" value="1"/>1 · <span id="cse_s1_1">A veces</span></label>
+              <label><input type="radio" name="cse_s1" value="2"/>2 · <span id="cse_s1_2">A menudo</span></label>
+              <label><input type="radio" name="cse_s1" value="3"/>3 · <span id="cse_s1_3">Casi siempre</span></label>
+            </div>
+            <div id="helpBox" class="help-box">Si estás pasándolo mal, no tienes que llevarlo solo/a. En España puedes llamar al <strong>024</strong>, línea gratuita y confidencial disponible las 24 horas.</div>
+          </div>
+        </fieldset>
+      </section>
+
+      <!-- STEP 4: CPP-10 -->
+      <section class="step" data-step="4">
+        <fieldset>
+          <legend id="leg_cpp">Personalidad</legend>
+          <div class="field-header">
+            <div class="field-title" id="cpp_title">CPP-10 · Perfil de personalidad</div>
+            <div class="field-badge" id="cpp_badge">10 ítems</div>
+          </div>
+          <p class="field-desc" id="cpp_scale">0 = Nada &nbsp;·&nbsp; 1 = Poco &nbsp;·&nbsp; 2 = Bastante &nbsp;·&nbsp; 3 = Mucho</p>
+          <div class="question"><label class="q-label" id="cpp1_q">1. Me gusta explorar ideas y mundos nuevos.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cpp1" value="0" required/>0</label><label><input type="radio" name="cpp1" value="1"/>1</label><label><input type="radio" name="cpp1" value="2"/>2</label><label><input type="radio" name="cpp1" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cpp2_q">2. Prefiero lo conocido y previsible a lo nuevo.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cpp2" value="0" required/>0</label><label><input type="radio" name="cpp2" value="1"/>1</label><label><input type="radio" name="cpp2" value="2"/>2</label><label><input type="radio" name="cpp2" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cpp3_q">3. Suelo ser organizado/a y cumplir con lo que me propongo.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cpp3" value="0" required/>0</label><label><input type="radio" name="cpp3" value="1"/>1</label><label><input type="radio" name="cpp3" value="2"/>2</label><label><input type="radio" name="cpp3" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cpp4_q">4. Tiendo a dejar cosas para después o a desorganizarme.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cpp4" value="0" required/>0</label><label><input type="radio" name="cpp4" value="1"/>1</label><label><input type="radio" name="cpp4" value="2"/>2</label><label><input type="radio" name="cpp4" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cpp5_q">5. Me energizo en contacto con otras personas.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cpp5" value="0" required/>0</label><label><input type="radio" name="cpp5" value="1"/>1</label><label><input type="radio" name="cpp5" value="2"/>2</label><label><input type="radio" name="cpp5" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cpp6_q">6. Prefiero la soledad o los ambientes tranquilos.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cpp6" value="0" required/>0</label><label><input type="radio" name="cpp6" value="1"/>1</label><label><input type="radio" name="cpp6" value="2"/>2</label><label><input type="radio" name="cpp6" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cpp7_q">7. Tiendo a ser empático/a y a cuidar de los demás.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cpp7" value="0" required/>0</label><label><input type="radio" name="cpp7" value="1"/>1</label><label><input type="radio" name="cpp7" value="2"/>2</label><label><input type="radio" name="cpp7" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cpp8_q">8. Soy directo/a y a veces poco paciente con los demás.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cpp8" value="0" required/>0</label><label><input type="radio" name="cpp8" value="1"/>1</label><label><input type="radio" name="cpp8" value="2"/>2</label><label><input type="radio" name="cpp8" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cpp9_q">9. Suelo estar tranquilo/a ante las dificultades.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cpp9" value="0" required/>0</label><label><input type="radio" name="cpp9" value="1"/>1</label><label><input type="radio" name="cpp9" value="2"/>2</label><label><input type="radio" name="cpp9" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cpp10_q">10. Me afectan mucho el estrés, las críticas o los cambios imprevistos.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cpp10" value="0" required/>0</label><label><input type="radio" name="cpp10" value="1"/>1</label><label><input type="radio" name="cpp10" value="2"/>2</label><label><input type="radio" name="cpp10" value="3"/>3</label></div></div>
+        </fieldset>
+      </section>
+
+      <!-- STEP 5: CEA-10 -->
+      <section class="step" data-step="5">
+        <fieldset>
+          <legend id="leg_cea">Alimentación</legend>
+          <div class="field-header">
+            <div class="field-title" id="cea_title">CEA-10 · Estilo alimentario</div>
+            <div class="field-badge" id="cea_badge">10 ítems</div>
+          </div>
+          <p class="field-desc" id="cea_scale">0 = Nunca &nbsp;·&nbsp; 1 = A veces &nbsp;·&nbsp; 2 = Frecuentemente &nbsp;·&nbsp; 3 = Siempre · Último mes</p>
+          <div class="question"><label class="q-label" id="cea1_q">1. He consumido fruta fresca casi cada día.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cea1" value="0" required/>0</label><label><input type="radio" name="cea1" value="1"/>1</label><label><input type="radio" name="cea1" value="2"/>2</label><label><input type="radio" name="cea1" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cea2_q">2. He incluido verduras u hortalizas en mis comidas principales.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cea2" value="0" required/>0</label><label><input type="radio" name="cea2" value="1"/>1</label><label><input type="radio" name="cea2" value="2"/>2</label><label><input type="radio" name="cea2" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cea3_q">3. He usado aceite de oliva u otras grasas saludables de forma habitual.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cea3" value="0" required/>0</label><label><input type="radio" name="cea3" value="1"/>1</label><label><input type="radio" name="cea3" value="2"/>2</label><label><input type="radio" name="cea3" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cea4_q">4. He comido comida rápida, bollería o ultraprocesados con frecuencia.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cea4" value="0" required/>0</label><label><input type="radio" name="cea4" value="1"/>1</label><label><input type="radio" name="cea4" value="2"/>2</label><label><input type="radio" name="cea4" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cea5_q">5. He comido pescado o marisco de forma regular.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cea5" value="0" required/>0</label><label><input type="radio" name="cea5" value="1"/>1</label><label><input type="radio" name="cea5" value="2"/>2</label><label><input type="radio" name="cea5" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cea6_q">6. He consumido legumbres semanalmente.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cea6" value="0" required/>0</label><label><input type="radio" name="cea6" value="1"/>1</label><label><input type="radio" name="cea6" value="2"/>2</label><label><input type="radio" name="cea6" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cea7_q">7. He comido carnes rojas o embutidos con frecuencia.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cea7" value="0" required/>0</label><label><input type="radio" name="cea7" value="1"/>1</label><label><input type="radio" name="cea7" value="2"/>2</label><label><input type="radio" name="cea7" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cea8_q">8. He bebido suficiente agua durante el día.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cea8" value="0" required/>0</label><label><input type="radio" name="cea8" value="1"/>1</label><label><input type="radio" name="cea8" value="2"/>2</label><label><input type="radio" name="cea8" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cea9_q">9. He tomado refrescos azucarados o bebidas energéticas habitualmente.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cea9" value="0" required/>0</label><label><input type="radio" name="cea9" value="1"/>1</label><label><input type="radio" name="cea9" value="2"/>2</label><label><input type="radio" name="cea9" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="cea10_q">10. He tenido digestiones cómodas y sin molestias intensas.<span class="required">*</span></label><div class="options"><label><input type="radio" name="cea10" value="0" required/>0</label><label><input type="radio" name="cea10" value="1"/>1</label><label><input type="radio" name="cea10" value="2"/>2</label><label><input type="radio" name="cea10" value="3"/>3</label></div></div>
+          <div class="callout" id="cea_callout">Perfil alimentario completado.</div>
+        </fieldset>
+      </section>
+
+      <!-- STEP 6: MAE-12 -->
+      <section class="step" data-step="6">
+        <fieldset>
+          <legend id="leg_mae">Afinidades</legend>
+          <div class="field-header">
+            <div class="field-title" id="mae_title">MAE-12 · Mapa de afinidades emocionales</div>
+            <div class="field-badge" id="mae_badge">12 ítems</div>
+          </div>
+          <p class="field-desc" id="mae_scale">0 = Nada &nbsp;·&nbsp; 1 = Un poco &nbsp;·&nbsp; 2 = Bastante &nbsp;·&nbsp; 3 = Mucho</p>
+          <div class="question"><label class="q-label" id="mae1_q">1. Me gusta moverme o estar en contacto con la naturaleza.<span class="required">*</span></label><div class="options"><label><input type="radio" name="mae1" value="0" required/>0</label><label><input type="radio" name="mae1" value="1"/>1</label><label><input type="radio" name="mae1" value="2"/>2</label><label><input type="radio" name="mae1" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="mae2_q">2. Disfruto de sensaciones físicas agradables (olor, tacto, sonido).<span class="required">*</span></label><div class="options"><label><input type="radio" name="mae2" value="0" required/>0</label><label><input type="radio" name="mae2" value="1"/>1</label><label><input type="radio" name="mae2" value="2"/>2</label><label><input type="radio" name="mae2" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="mae3_q">3. Me gusta aprender cosas nuevas.<span class="required">*</span></label><div class="options"><label><input type="radio" name="mae3" value="0" required/>0</label><label><input type="radio" name="mae3" value="1"/>1</label><label><input type="radio" name="mae3" value="2"/>2</label><label><input type="radio" name="mae3" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="mae4_q">4. Me satisface entender cómo funciona algo.<span class="required">*</span></label><div class="options"><label><input type="radio" name="mae4" value="0" required/>0</label><label><input type="radio" name="mae4" value="1"/>1</label><label><input type="radio" name="mae4" value="2"/>2</label><label><input type="radio" name="mae4" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="mae5_q">5. Me gusta expresarme mediante arte, música o escritura.<span class="required">*</span></label><div class="options"><label><input type="radio" name="mae5" value="0" required/>0</label><label><input type="radio" name="mae5" value="1"/>1</label><label><input type="radio" name="mae5" value="2"/>2</label><label><input type="radio" name="mae5" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="mae6_q">6. Me inspiran lugares u objetos con belleza o armonía.<span class="required">*</span></label><div class="options"><label><input type="radio" name="mae6" value="0" required/>0</label><label><input type="radio" name="mae6" value="1"/>1</label><label><input type="radio" name="mae6" value="2"/>2</label><label><input type="radio" name="mae6" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="mae7_q">7. Me nutre pasar tiempo con otras personas.<span class="required">*</span></label><div class="options"><label><input type="radio" name="mae7" value="0" required/>0</label><label><input type="radio" name="mae7" value="1"/>1</label><label><input type="radio" name="mae7" value="2"/>2</label><label><input type="radio" name="mae7" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="mae8_q">8. Me gusta compartir mis pensamientos o emociones con otros.<span class="required">*</span></label><div class="options"><label><input type="radio" name="mae8" value="0" required/>0</label><label><input type="radio" name="mae8" value="1"/>1</label><label><input type="radio" name="mae8" value="2"/>2</label><label><input type="radio" name="mae8" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="mae9_q">9. Me motiva probar cosas nuevas y diferentes.<span class="required">*</span></label><div class="options"><label><input type="radio" name="mae9" value="0" required/>0</label><label><input type="radio" name="mae9" value="1"/>1</label><label><input type="radio" name="mae9" value="2"/>2</label><label><input type="radio" name="mae9" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="mae10_q">10. Me gustan los retos pequeños o improvisar sobre la marcha.<span class="required">*</span></label><div class="options"><label><input type="radio" name="mae10" value="0" required/>0</label><label><input type="radio" name="mae10" value="1"/>1</label><label><input type="radio" name="mae10" value="2"/>2</label><label><input type="radio" name="mae10" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="mae11_q">11. Valoro los momentos de calma y silencio.<span class="required">*</span></label><div class="options"><label><input type="radio" name="mae11" value="0" required/>0</label><label><input type="radio" name="mae11" value="1"/>1</label><label><input type="radio" name="mae11" value="2"/>2</label><label><input type="radio" name="mae11" value="3"/>3</label></div></div>
+          <div class="question"><label class="q-label" id="mae12_q">12. La introspección (pensar y sentir hacia dentro) me hace sentir bien.<span class="required">*</span></label><div class="options"><label><input type="radio" name="mae12" value="0" required/>0</label><label><input type="radio" name="mae12" value="1"/>1</label><label><input type="radio" name="mae12" value="2"/>2</label><label><input type="radio" name="mae12" value="3"/>3</label></div></div>
+          <div class="callout" id="mae_callout">Has llegado al final. Pulsa "Guardar perfil" para continuar.</div>
+        </fieldset>
+      </section>
+
+      <!-- NAVIGATION -->
+      <div class="nav-row" id="navRow">
+        <div class="nav-btns">
+          <button type="button" class="btn btn-back" id="prevBtn">Atrás</button>
+          <button type="button" class="btn btn-next" id="nextBtn">Siguiente</button>
+          <button type="button" class="btn btn-skip" id="skipBtn" style="display:none;" onclick="skipOptionalStep()">Saltar</button>
+        </div>
+        <span id="statusText" class="status-text">Tus datos se guardan de forma segura y anónima.</span>
+      </div>
+    </form>
+
+    <!-- GRACIAS -->
+    <div class="thankyou" id="thankyou">
+      <div class="thankyou-title" id="thankyou_title">Perfil creado</div>
+      <p class="thankyou-body" id="thankyou_body1">Tu perfil Kair ha sido guardado correctamente.</p>
+      <div class="uid-display" id="thankyouId"></div>
+      <p class="thankyou-body" style="margin-top:8px;" id="thankyou_body2">Con este ID accedes a la app y ves tu evolución a lo largo del tiempo.</p>
+      <a href="index.html" class="btn-goto" id="thankyou_btn">Ir a la app</a>
+    </div>
+  </main>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════
+let SUPABASE_URL = '', SUPABASE_ANON_KEY = '';
+
+async function cargarConfig() {
+  try {
+    const r = await fetch('/api/config');
+    if (!r.ok) throw new Error('config error');
+    const cfg = await r.json();
+    SUPABASE_URL = cfg.SUPABASE_URL || '';
+    SUPABASE_ANON_KEY = cfg.SUPABASE_ANON_KEY || '';
+  } catch(e) {
+    console.error('Error cargando config:', e);
+  }
+}
+
+async function supabaseInsert(table, data) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify(data)
+  });
+  if (!r.ok) { const e = await r.text(); throw new Error(e); }
+  return true;
+}
+
+async function supabaseUpdate(table, filters, data) {
+  let url = `${SUPABASE_URL}/rest/v1/${table}?`;
+  Object.entries(filters).forEach(([k, v]) => { url += `${k}=eq.${encodeURIComponent(v)}&`; });
+  const r = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+    },
+    body: JSON.stringify(data)
+  });
+  if (!r.ok) { const e = await r.text(); throw new Error(e); }
+  return true;
+}
+
+// ════════════════════════════════════════
+// I18N
+// ════════════════════════════════════════
+const I18N_Q = {
+  es: {
+    headerTitle: 'Crea tu perfil',
+    headerSub: 'Completa el formulario para recibir recomendaciones adaptadas a ti. Solo tardarás unos minutos.',
+    progressLabel: 'Progreso', stepOf: 'Paso {n} de {total}',
+    btnBack: 'Atrás', btnNext: 'Siguiente', btnSave: 'Guardar perfil', btnSkip: 'Saltar este paso',
+    statusDefault: 'Tus datos se guardan de forma segura y anónima.',
+    statusSaving: 'Guardando perfil...', statusOk: 'Perfil guardado correctamente.',
+    errRequired: 'Por favor, completa todas las preguntas obligatorias.',
+    errConsent: 'Para continuar debes aceptar el consentimiento.',
+    errDuplicate: 'Este ID ya existe. Elige otro diferente.',
+    errGeneral: 'Error al guardar. Inténtalo de nuevo.',
+    alertRequired: 'Por favor, completa todas las preguntas obligatorias.',
+    optional_banner_text: 'Este paso es opcional. Puedes completarlo ahora o más tarde desde la app.',
+    step_just_id: 'Solo necesitas el Paso 1 para entrar a la app. Los siguientes pasos mejoran tus recomendaciones y los puedes completar después.',
+    leg_general: 'Datos generales', general_title: 'Información básica', general_badge: '~1 minuto',
+    uid_label: 'Elige tu ID personal', uid_help: 'Crea un código que solo tú conozcas. Lo usarás para acceder a la app cada día y ver tu evolución.',
+    uid_placeholder: 'Ej. IM2024A',
+    edad_label: 'Edad', genero_label: 'Género',
+    gen_h: 'Hombre', gen_m: 'Mujer', gen_nb: 'No binario', gen_nd: 'Prefiero no decirlo',
+    pais_label: 'País de residencia',
+    email_label: 'Email (opcional)', email_help: 'Añade tu email para poder recuperar tu ID si lo pierdes. Solo se usa para eso, nunca para marketing.',
+    email_help_inline: 'para recuperar tu ID',
+    leg_consent: 'Consentimiento', consent_title: 'Consentimiento informado', consent_badge: 'Obligatorio',
+    consent_desc: 'Kair recoge información sobre tu bienestar emocional, alimentación y personalidad para ofrecerte recomendaciones personalizadas. Tu participación es voluntaria, tus datos son anónimos y puedes retirar tu consentimiento en cualquier momento.',
+    consent_q: '¿Aceptas participar?', consent_yes: 'Sí, acepto', consent_no: 'No deseo participar',
+    leg_salud: 'Salud', salud_title: 'Condiciones de salud', salud_badge: 'Opcional',
+    salud_desc: 'Esta información es opcional y solo se usa para personalizar tus recomendaciones evitando posibles interacciones. Kair no es un servicio médico.',
+    salud_q: '¿Tienes alguna condición de salud diagnosticada?',
+    cond_dm: 'Diabetes tipo 2', cond_hta: 'Hipertensión', cond_tsh: 'Hipotiroidismo',
+    cond_sii: 'SII (intestino irritable)', cond_fibro: 'Fibromialgia',
+    cond_dep: 'Depresión diagnosticada', cond_anx: 'Ansiedad diagnosticada',
+    cond_tdah: 'TDAH', cond_none: 'Ninguna', cond_pref: 'Prefiero no indicarlo',
+    cond_otras_label: 'Otras condiciones no listadas',
+    leg_med: 'Medicación', med_title: 'Medicación habitual', med_badge: 'Opcional',
+    med_q: '¿Tomas algún medicamento de forma habitual?',
+    med_ad: 'Antidepresivos / ansiolíticos', med_ac: 'Anticoagulantes',
+    med_is: 'Inmunosupresores', med_ah: 'Anticonceptivos hormonales',
+    med_tir: 'Medicación tiroidea', med_ibp: 'IBP (omeprazol y similares)',
+    med_none: 'Ninguno', med_pref: 'Prefiero no indicarlo',
+    med_otras_label: 'Otros medicamentos',
+    salud_info_box: 'Esta información solo se usa para evitar recomendaciones que puedan interactuar con tu medicación.',
+    leg_cse: 'Cuerpo y emoción', cse_title: 'CSE-12 · Última semana', cse_badge: '12 ítems',
+    cse_scale: '0 = Nunca · 1 = A veces · 2 = A menudo · 3 = Casi siempre',
+    cse1_q: '1. He sentido mi cuerpo más tenso, rígido o contraído de lo habitual.',
+    cse2_q: '2. He notado mi energía corporal baja, apagada o inestable.',
+    cse3_q: '3. Mi respiración, digestión o ritmo corporal se han alterado en momentos de tensión.',
+    cse4_q: '4. Me ha costado desconectar el cuerpo o la mente al final del día.',
+    cse5_q: '5. He notado un exceso de ruido interno (pensamientos, tensión o inquietud).',
+    cse6_q: '6. He sentido mi cuerpo en alerta o reaccionando más rápido de lo normal.',
+    cse7_q: '7. Mi atención ha estado dispersa o desconectada del momento presente.',
+    cse8_q: '8. He realizado tareas con poca presencia corporal o en modo automático.',
+    cse9_q: '9. Me ha costado conectar o resonar con otras personas como suelo hacerlo.',
+    cse10_q: '10. He sentido un peso emocional en el cuerpo (tristeza, vacío, bajón).',
+    cse11_q: '11. Me ha resultado difícil tratarme con suavidad o amabilidad.',
+    cse12_q: '12. Mi motivación o dirección emocional han estado apagadas.',
+    cse_s1_q: 'Pregunta confidencial: En algún momento de esta semana he sentido ganas de desaparecer o desconectar de todo.',
+    cse_s1_0: 'Nunca', cse_s1_1: 'A veces', cse_s1_2: 'A menudo', cse_s1_3: 'Casi siempre',
+    helpbox_text: 'Si estás pasándolo mal, no tienes que llevarlo solo/a. En España puedes llamar al 024, línea gratuita y confidencial disponible las 24 horas.',
+    safetyModalTitle: 'Gracias por compartir cómo te sientes',
+    safetyP1: 'Lo que has marcado indica un nivel de malestar que merece atención. No tienes que llevarlo solo/a.',
+    safetyP2: 'En España puedes llamar al 024, línea gratuita y confidencial de atención a la conducta suicida, disponible las 24 horas.',
+    safetyP3: 'También puedes acudir a tu centro de salud o contactar con un profesional de la psicología.',
+    safetyClose: 'Cerrar',
+    leg_cpp: 'Personalidad', cpp_title: 'CPP-10 · Perfil de personalidad', cpp_badge: '10 ítems',
+    cpp_scale: '0 = Nada · 1 = Poco · 2 = Bastante · 3 = Mucho',
+    cpp1_q: '1. Me gusta explorar ideas y mundos nuevos.', cpp2_q: '2. Prefiero lo conocido y previsible a lo nuevo.',
+    cpp3_q: '3. Suelo ser organizado/a y cumplir con lo que me propongo.', cpp4_q: '4. Tiendo a dejar cosas para después o a desorganizarme.',
+    cpp5_q: '5. Me energizo en contacto con otras personas.', cpp6_q: '6. Prefiero la soledad o los ambientes tranquilos.',
+    cpp7_q: '7. Tiendo a ser empático/a y a cuidar de los demás.', cpp8_q: '8. Soy directo/a y a veces poco paciente con los demás.',
+    cpp9_q: '9. Suelo estar tranquilo/a ante las dificultades.', cpp10_q: '10. Me afectan mucho el estrés, las críticas o los cambios imprevistos.',
+    leg_cea: 'Alimentación', cea_title: 'CEA-10 · Estilo alimentario', cea_badge: '10 ítems',
+    cea_scale: '0 = Nunca · 1 = A veces · 2 = Frecuentemente · 3 = Siempre · Último mes',
+    cea1_q: '1. He consumido fruta fresca casi cada día.', cea2_q: '2. He incluido verduras u hortalizas en mis comidas principales.',
+    cea3_q: '3. He usado aceite de oliva u otras grasas saludables de forma habitual.', cea4_q: '4. He comido comida rápida, bollería o ultraprocesados con frecuencia.',
+    cea5_q: '5. He comido pescado o marisco de forma regular.', cea6_q: '6. He consumido legumbres semanalmente.',
+    cea7_q: '7. He comido carnes rojas o embutidos con frecuencia.', cea8_q: '8. He bebido suficiente agua durante el día.',
+    cea9_q: '9. He tomado refrescos azucarados o bebidas energéticas habitualmente.', cea10_q: '10. He tenido digestiones cómodas y sin molestias intensas.',
+    cea_callout: 'Perfil alimentario completado.',
+    leg_mae: 'Afinidades', mae_title: 'MAE-12 · Mapa de afinidades emocionales', mae_badge: '12 ítems',
+    mae_scale: '0 = Nada · 1 = Un poco · 2 = Bastante · 3 = Mucho',
+    mae1_q: '1. Me gusta moverme o estar en contacto con la naturaleza.', mae2_q: '2. Disfruto de sensaciones físicas agradables (olor, tacto, sonido).',
+    mae3_q: '3. Me gusta aprender cosas nuevas.', mae4_q: '4. Me satisface entender cómo funciona algo.',
+    mae5_q: '5. Me gusta expresarme mediante arte, música o escritura.', mae6_q: '6. Me inspiran lugares u objetos con belleza o armonía.',
+    mae7_q: '7. Me nutre pasar tiempo con otras personas.', mae8_q: '8. Me gusta compartir mis pensamientos o emociones con otros.',
+    mae9_q: '9. Me motiva probar cosas nuevas y diferentes.', mae10_q: '10. Me gustan los retos pequeños o improvisar sobre la marcha.',
+    mae11_q: '11. Valoro los momentos de calma y silencio.', mae12_q: '12. La introspección (pensar y sentir hacia dentro) me hace sentir bien.',
+    mae_callout: 'Has llegado al final. Pulsa "Guardar perfil" para continuar.',
+    thankyou_title: 'Perfil creado',
+    thankyou_body1: 'Tu perfil Kair ha sido guardado. Tienes 7 días de prueba gratuita de Kair Bloom activada. Guarda tu ID, lo necesitarás para acceder.',
+    thankyou_body2: 'Con este ID accedes a la app y ves tu evolución a lo largo del tiempo.',
+    thankyou_btn: 'Ir a la app',
+  },
+  va: {
+    headerTitle: 'Crea el teu perfil',
+    headerSub: 'Completa el formulari per rebre recomanacions adaptades a tu. Sols tardaràs uns minuts.',
+    progressLabel: 'Progrés', stepOf: 'Pas {n} de {total}',
+    btnBack: 'Enrere', btnNext: 'Següent', btnSave: 'Guardar perfil', btnSkip: 'Saltar aquest pas',
+    statusDefault: 'Les teues dades es guarden de forma segura i anònima.',
+    statusSaving: 'Guardant perfil...', statusOk: 'Perfil guardat correctament.',
+    errRequired: 'Per favor, completa totes les preguntes obligatòries.',
+    errConsent: 'Per a continuar has d\'acceptar el consentiment.',
+    errDuplicate: 'Este ID ja existeix. Tria un altre diferent.',
+    errGeneral: 'Error en guardar. Intenta-ho de nou.',
+    alertRequired: 'Per favor, completa totes les preguntes obligatòries.',
+    optional_banner_text: 'Este pas és opcional. Pots completar-lo ara o més tard des de l\'app.',
+    step_just_id: 'Sols necessites el Pas 1 per entrar a l\'app. Els següents passos milloren les teues recomanacions i els pots completar després.',
+    leg_general: 'Dades generals', general_title: 'Informació bàsica', general_badge: '~1 minut',
+    uid_label: 'Tria el teu ID personal', uid_help: 'Crea un codi que sols tu conega. L\'usaràs per accedir a l\'app cada dia.',
+    uid_placeholder: 'Ex. IM2024A',
+    edad_label: 'Edat', genero_label: 'Gènere',
+    gen_h: 'Home', gen_m: 'Dona', gen_nb: 'No binari', gen_nd: 'Preferixc no dir-ho',
+    pais_label: 'País de residència',
+    email_label: 'Correu (opcional)', email_help: 'Afig el teu correu per poder recuperar el teu ID si el perds. Sols s\'usa per a açò, mai per a màrqueting.',
+    email_help_inline: 'per recuperar el teu ID',
+    leg_consent: 'Consentiment', consent_title: 'Consentiment informat', consent_badge: 'Obligatori',
+    consent_desc: 'Kair recull informació sobre el teu benestar emocional, alimentació i personalitat per oferir-te recomanacions personalitzades.',
+    consent_q: 'Acceptes participar?', consent_yes: 'Sí, accepte', consent_no: 'No desitge participar',
+    leg_salud: 'Salut', salud_title: 'Condicions de salut', salud_badge: 'Opcional',
+    salud_desc: 'Esta informació és opcional i sols s\'usa per personalitzar les teues recomanacions.',
+    salud_q: 'Tens alguna condició de salut diagnosticada?',
+    cond_dm: 'Diabetis tipus 2', cond_hta: 'Hipertensió', cond_tsh: 'Hipotiroidisme',
+    cond_sii: 'SII (intestí irritable)', cond_fibro: 'Fibromiàlgia',
+    cond_dep: 'Depressió diagnosticada', cond_anx: 'Ansietat diagnosticada',
+    cond_tdah: 'TDAH', cond_none: 'Cap', cond_pref: 'Preferixc no indicar-ho',
+    cond_otras_label: 'Altres condicions no llistades',
+    leg_med: 'Medicació', med_title: 'Medicació habitual', med_badge: 'Opcional',
+    med_q: 'Prens algun medicament de forma habitual?',
+    med_ad: 'Antidepressius / ansiolítics', med_ac: 'Anticoagulants',
+    med_is: 'Immunosupressors', med_ah: 'Anticonceptius hormonals',
+    med_tir: 'Medicació tiroidal', med_ibp: 'IBP (omeprazol i similars)',
+    med_none: 'Cap', med_pref: 'Preferixc no indicar-ho',
+    med_otras_label: 'Altres medicaments',
+    salud_info_box: 'Esta informació sols s\'usa per evitar recomanacions que puguen interactuar amb la teua medicació.',
+    leg_cse: 'Cos i emoció', cse_title: 'CSE-12 · Última setmana', cse_badge: '12 ítems',
+    cse_scale: '0 = Mai · 1 = De vegades · 2 = Sovint · 3 = Quasi sempre',
+    cse1_q: '1. He sentit el meu cos més tens, rígid o contret de l\'habitual.',
+    cse2_q: '2. He notat la meua energia corporal baixa, apagada o inestable.',
+    cse3_q: '3. La meua respiració, digestió o ritme corporal s\'han alterat en moments de tensió.',
+    cse4_q: '4. M\'ha costat desconnectar el cos o la ment al final del dia.',
+    cse5_q: '5. He notat un excés de soroll intern (pensaments, tensió o inquietud).',
+    cse6_q: '6. He sentit el meu cos en alerta o reaccionant més ràpid de l\'habitual.',
+    cse7_q: '7. La meua atenció ha estat dispersa o desconnectada del moment present.',
+    cse8_q: '8. He realitzat tasques amb poca presència corporal o en mode automàtic.',
+    cse9_q: '9. M\'ha costat connectar o ressonar amb altres persones com solia fer-ho.',
+    cse10_q: '10. He sentit un pes emocional en el cos (tristesa, buit, baixada).',
+    cse11_q: '11. M\'ha resultat difícil tractar-me amb suavitat o amabilitat.',
+    cse12_q: '12. La meua motivació o direcció emocional han estat apagades.',
+    cse_s1_q: 'Pregunta confidencial: En algun moment d\'esta setmana he sentit ganes de desaparèixer o desconnectar de tot.',
+    cse_s1_0: 'Mai', cse_s1_1: 'De vegades', cse_s1_2: 'Sovint', cse_s1_3: 'Quasi sempre',
+    helpbox_text: 'Si estàs passant-ho malament, no has de portar-ho sol/a. A Espanya pots trucar al 024, línia gratuïta i confidencial disponible les 24 hores.',
+    safetyModalTitle: 'Gràcies per compartir com et sents',
+    safetyP1: 'El que has marcat indica un nivell de malestar que mereix atenció.',
+    safetyP2: 'A Espanya pots trucar al 024, línia gratuïta i confidencial d\'atenció a la conducta suïcida.',
+    safetyP3: 'També pots acudir al teu centre de salut o contactar amb un professional de la psicologia.',
+    safetyClose: 'Tancar',
+    leg_cpp: 'Personalitat', cpp_title: 'CPP-10 · Perfil de personalitat', cpp_badge: '10 ítems',
+    cpp_scale: '0 = Gens · 1 = Poc · 2 = Bastant · 3 = Molt',
+    cpp1_q: '1. M\'agrada explorar idees i mons nous.', cpp2_q: '2. Preferixc el conegut i previsible al nou.',
+    cpp3_q: '3. Soc organitzat/da i complixc amb el que em propose.', cpp4_q: '4. Tendixc a deixar coses per a després o a desorganitzar-me.',
+    cpp5_q: '5. M\'energitze en contacte amb altres persones.', cpp6_q: '6. Preferixc la solitud o els ambients tranquils.',
+    cpp7_q: '7. Tendixc a ser empàtic/a i a cuidar dels altres.', cpp8_q: '8. Soc directe/a i de vegades poc pacient amb els altres.',
+    cpp9_q: '9. Soc tranquil/·la davant les dificultats.', cpp10_q: '10. M\'afecten molt l\'estrés, les crítiques o els canvis imprevistos.',
+    leg_cea: 'Alimentació', cea_title: 'CEA-10 · Estil alimentari', cea_badge: '10 ítems',
+    cea_scale: '0 = Mai · 1 = De vegades · 2 = Freqüentment · 3 = Sempre · Últim mes',
+    cea1_q: '1. He consumit fruita fresca quasi cada dia.', cea2_q: '2. He inclòs verdures o hortalisses en els meus menjars principals.',
+    cea3_q: '3. He usat oli d\'oliva o altres greixos saludables de forma habitual.', cea4_q: '4. He menjat menjar ràpid, brioixeria o ultrapprocessats amb freqüència.',
+    cea5_q: '5. He menjat peix o marisc de forma regular.', cea6_q: '6. He consumit llegums setmanalment.',
+    cea7_q: '7. He menjat carns roges o embotits amb freqüència.', cea8_q: '8. He begut suficient aigua durant el dia.',
+    cea9_q: '9. He pres refrescos ensucrats o begudes energètiques habitualment.', cea10_q: '10. He tingut digestions còmodes i sense molèsties intenses.',
+    cea_callout: 'Perfil alimentari completat.',
+    leg_mae: 'Afinitats', mae_title: 'MAE-12 · Mapa d\'afinitats emocionals', mae_badge: '12 ítems',
+    mae_scale: '0 = Gens · 1 = Una mica · 2 = Bastant · 3 = Molt',
+    mae1_q: '1. M\'agrada moure\'m o estar en contacte amb la naturalesa.', mae2_q: '2. Gaudixc de sensacions físiques agradables (olor, tacte, so).',
+    mae3_q: '3. M\'agrada aprendre coses noves.', mae4_q: '4. Em satisfà entendre com funciona alguna cosa.',
+    mae5_q: '5. M\'agrada expressar-me mitjançant l\'art, la música o l\'escriptura.', mae6_q: '6. M\'inspiren llocs o objectes amb bellesa o harmonia.',
+    mae7_q: '7. Em nodreix passar temps amb altres persones.', mae8_q: '8. M\'agrada compartir els meus pensaments o emocions amb altres.',
+    mae9_q: '9. Em motiva provar coses noves i diferents.', mae10_q: '10. M\'agraden els reptes xicotets o improvisar sobre la marxa.',
+    mae11_q: '11. Valor els moments de calma i silenci.', mae12_q: '12. La introspecció (pensar i sentir cap a dins) em fa sentir bé.',
+    mae_callout: 'Has arribat al final. Prem "Guardar perfil" per a continuar.',
+    thankyou_title: 'Perfil creat',
+    thankyou_body1: 'El teu perfil Kair ha sigut guardat. Tens 7 dies de prova gratuïta de Kair Bloom activada.',
+    thankyou_body2: 'Amb este ID accedixes a l\'app i veus la teua evolució al llarg del temps.',
+    thankyou_btn: 'Anar a l\'app',
+  },
+  en: {
+    headerTitle: 'Create your profile',
+    headerSub: 'Complete the form to receive recommendations tailored to you. It only takes a few minutes.',
+    progressLabel: 'Progress', stepOf: 'Step {n} of {total}',
+    btnBack: 'Back', btnNext: 'Next', btnSave: 'Save profile', btnSkip: 'Skip this step',
+    statusDefault: 'Your data is saved securely and anonymously.',
+    statusSaving: 'Saving profile...', statusOk: 'Profile saved successfully.',
+    errRequired: 'Please complete all required questions.',
+    errConsent: 'You must accept the consent to continue.',
+    errDuplicate: 'This ID already exists. Please choose a different one.',
+    errGeneral: 'Error saving. Please try again.',
+    alertRequired: 'Please complete all required questions.',
+    optional_banner_text: 'This step is optional. You can complete it now or later from the app.',
+    step_just_id: 'You only need Step 1 to enter the app. The following steps improve your recommendations and can be completed later.',
+    leg_general: 'General information', general_title: 'Basic information', general_badge: '~1 minute',
+    uid_label: 'Choose your personal ID', uid_help: 'Create a code only you know. You\'ll use it to log into the app each day.',
+    uid_placeholder: 'E.g. IM2024A',
+    edad_label: 'Age', genero_label: 'Gender',
+    gen_h: 'Male', gen_m: 'Female', gen_nb: 'Non-binary', gen_nd: 'Prefer not to say',
+    pais_label: 'Country of residence',
+    email_label: 'Email (optional)', email_help: 'Add your email to recover your ID if you lose it. Only used for that, never for marketing.',
+    email_help_inline: 'to recover your ID',
+    leg_consent: 'Consent', consent_title: 'Informed consent', consent_badge: 'Required',
+    consent_desc: 'Kair collects information about your emotional wellbeing, diet and personality to offer personalised recommendations.',
+    consent_q: 'Do you agree to participate?', consent_yes: 'Yes, I agree', consent_no: 'I do not wish to participate',
+    leg_salud: 'Health', salud_title: 'Health conditions', salud_badge: 'Optional',
+    salud_desc: 'This information is optional and only used to personalise your recommendations.',
+    salud_q: 'Do you have any diagnosed health conditions?',
+    cond_dm: 'Type 2 diabetes', cond_hta: 'Hypertension', cond_tsh: 'Hypothyroidism',
+    cond_sii: 'IBS (irritable bowel syndrome)', cond_fibro: 'Fibromyalgia',
+    cond_dep: 'Diagnosed depression', cond_anx: 'Diagnosed anxiety',
+    cond_tdah: 'ADHD', cond_none: 'None', cond_pref: 'Prefer not to say',
+    cond_otras_label: 'Other conditions not listed',
+    leg_med: 'Medication', med_title: 'Regular medication', med_badge: 'Optional',
+    med_q: 'Do you take any medication regularly?',
+    med_ad: 'Antidepressants / anxiolytics', med_ac: 'Anticoagulants',
+    med_is: 'Immunosuppressants', med_ah: 'Hormonal contraceptives',
+    med_tir: 'Thyroid medication', med_ibp: 'PPIs (omeprazole and similar)',
+    med_none: 'None', med_pref: 'Prefer not to say',
+    med_otras_label: 'Other medications',
+    salud_info_box: 'This information is only used to avoid recommendations that may interact with your medication.',
+    leg_cse: 'Body and emotion', cse_title: 'CSE-12 · Last week', cse_badge: '12 items',
+    cse_scale: '0 = Never · 1 = Sometimes · 2 = Often · 3 = Almost always',
+    cse1_q: '1. My body has felt more tense, rigid or contracted than usual.',
+    cse2_q: '2. My physical energy has felt low, flat or unstable.',
+    cse3_q: '3. My breathing, digestion or body rhythm has been disrupted during tension.',
+    cse4_q: '4. I have found it difficult to switch off at the end of the day.',
+    cse5_q: '5. I have noticed excessive internal noise (thoughts, tension, restlessness).',
+    cse6_q: '6. My body has felt on alert or reacting faster than normal.',
+    cse7_q: '7. My attention has been scattered or disconnected from the present moment.',
+    cse8_q: '8. I have carried out tasks with little bodily awareness or on autopilot.',
+    cse9_q: '9. I have found it hard to connect with other people as I usually do.',
+    cse10_q: '10. I have felt an emotional weight in my body (sadness, emptiness, low mood).',
+    cse11_q: '11. I have found it difficult to treat myself with gentleness.',
+    cse12_q: '12. My motivation or emotional direction has felt flat.',
+    cse_s1_q: 'Confidential: At some point this week I have felt like disappearing or disconnecting from everything.',
+    cse_s1_0: 'Never', cse_s1_1: 'Sometimes', cse_s1_2: 'Often', cse_s1_3: 'Almost always',
+    helpbox_text: 'If you are struggling, you don\'t have to face it alone. You can call 116 123 (Samaritans, UK/IE) or 988 (USA).',
+    safetyModalTitle: 'Thank you for sharing how you feel',
+    safetyP1: 'What you have marked indicates a level of distress that deserves attention.',
+    safetyP2: 'You can call 116 123 (Samaritans, UK/IE, free and confidential, 24/7) or 988 (USA).',
+    safetyP3: 'You can also visit your nearest health centre or contact a psychology professional.',
+    safetyClose: 'Close',
+    leg_cpp: 'Personality', cpp_title: 'CPP-10 · Personality profile', cpp_badge: '10 items',
+    cpp_scale: '0 = Not at all · 1 = A little · 2 = Quite a lot · 3 = Very much',
+    cpp1_q: '1. I enjoy exploring new ideas and worlds.', cpp2_q: '2. I prefer the familiar and predictable to the new.',
+    cpp3_q: '3. I tend to be organised and follow through on plans.', cpp4_q: '4. I tend to procrastinate or become disorganised.',
+    cpp5_q: '5. I feel energised when around other people.', cpp6_q: '6. I prefer solitude or quiet environments.',
+    cpp7_q: '7. I tend to be empathetic and caring towards others.', cpp8_q: '8. I am direct and sometimes impatient with others.',
+    cpp9_q: '9. I tend to remain calm when facing difficulties.', cpp10_q: '10. I am strongly affected by stress, criticism or unexpected changes.',
+    leg_cea: 'Diet', cea_title: 'CEA-10 · Dietary style', cea_badge: '10 items',
+    cea_scale: '0 = Never · 1 = Sometimes · 2 = Frequently · 3 = Always · Past month',
+    cea1_q: '1. I have eaten fresh fruit almost every day.', cea2_q: '2. I have included vegetables in my main meals.',
+    cea3_q: '3. I have used olive oil or other healthy fats regularly.', cea4_q: '4. I have eaten fast food, pastries or ultra-processed foods frequently.',
+    cea5_q: '5. I have eaten fish or seafood regularly.', cea6_q: '6. I have eaten pulses weekly.',
+    cea7_q: '7. I have eaten red meat or processed meats frequently.', cea8_q: '8. I have drunk enough water throughout the day.',
+    cea9_q: '9. I have regularly consumed sugary drinks or energy drinks.', cea10_q: '10. My digestion has been comfortable without intense discomfort.',
+    cea_callout: 'Dietary profile completed.',
+    leg_mae: 'Affinities', mae_title: 'MAE-12 · Emotional affinity map', mae_badge: '12 items',
+    mae_scale: '0 = Not at all · 1 = A little · 2 = Quite a lot · 3 = Very much',
+    mae1_q: '1. I enjoy moving or being in contact with nature.', mae2_q: '2. I enjoy pleasant physical sensations (smell, touch, sound).',
+    mae3_q: '3. I enjoy learning new things.', mae4_q: '4. I find satisfaction in understanding how things work.',
+    mae5_q: '5. I enjoy expressing myself through art, music or writing.', mae6_q: '6. I am inspired by places or objects of beauty or harmony.',
+    mae7_q: '7. Time with other people nourishes me.', mae8_q: '8. I enjoy sharing my thoughts or feelings with others.',
+    mae9_q: '9. I am motivated to try new and different things.', mae10_q: '10. I enjoy small challenges or improvising on the go.',
+    mae11_q: '11. I value moments of calm and quiet.', mae12_q: '12. Introspection makes me feel good.',
+    mae_callout: 'You have reached the end. Press "Save profile" to continue.',
+    thankyou_title: 'Profile created',
+    thankyou_body1: 'Your Kair profile has been saved. You have a 7-day free trial of Kair Bloom activated. Save your ID, you\'ll need it to access the app.',
+    thankyou_body2: 'Use this ID to log into the app and track your progress.',
+    thankyou_btn: 'Go to the app',
+  }
+};
+
+let currentLang = 'es';
+function t(key) {
+  return (I18N_Q[currentLang] || I18N_Q.es)[key] || I18N_Q.es[key] || key;
+}
+
+function applyI18n() {
+  const ids = Object.keys(I18N_Q.es);
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t(id);
+  });
+  const uidEl = document.getElementById('uid');
+  if (uidEl) uidEl.placeholder = t('uid_placeholder');
+  const nb = document.getElementById('nextBtn');
+  if (nb) nb.textContent = isLastStep() ? t('btnSave') : t('btnNext');
+  const pb = document.getElementById('prevBtn');
+  if (pb) pb.textContent = t('btnBack');
+  const sb = document.getElementById('skipBtn');
+  if (sb) sb.textContent = t('btnSkip');
+  document.getElementById('headerTitle').textContent = t('headerTitle');
+  document.getElementById('headerSubtitle').textContent = t('headerSub');
+  document.getElementById('stepLabel').textContent = t('stepOf').replace('{n}', currentStep + 1).replace('{total}', totalSteps);
+  document.getElementById('progressLabel').textContent = t('progressLabel');
+  document.getElementById('safetyModalTitle').textContent = t('safetyModalTitle');
+  document.getElementById('safetyP1').textContent = t('safetyP1');
+  document.getElementById('safetyP2').textContent = t('safetyP2');
+  document.getElementById('safetyP3').textContent = t('safetyP3');
+  document.getElementById('safetyClose').textContent = t('safetyClose');
+  document.getElementById('helpBox').textContent = t('helpbox_text');
+  document.getElementById('email_help_inline').textContent = '— ' + t('email_help_inline');
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('kair_lang', lang);
+  document.documentElement.lang = lang === 'va' ? 'ca' : lang;
+  applyI18n();
+}
+
+function detectLang() {
+  const stored = localStorage.getItem('kair_lang');
+  if (stored && I18N_Q[stored]) return stored;
+  const nav = (navigator.language || 'es').toLowerCase();
+  if (nav.startsWith('ca') || nav.startsWith('va')) return 'va';
+  if (nav.startsWith('en')) return 'en';
+  return 'es';
+}
+
+// ════════════════════════════════════════
+// ESTADO — variables a nivel de módulo
+// ════════════════════════════════════════
+let currentStep = 0;
+const totalSteps = 7;
+const OPTIONAL_STEPS = [2, 3, 4, 5, 6];
+
+const urlParams = new URLSearchParams(window.location.search);
+const startStep = parseInt(urlParams.get('step') || '0');
+const existingUid = urlParams.get('uid') || null;
+const isUpdateMode = !!(existingUid && startStep > 0);
+
+function isLastStep() {
+  if (isUpdateMode) return true;
+  return currentStep === totalSteps - 1;
+}
+
+function isOptionalStep(step) {
+  return OPTIONAL_STEPS.includes(step);
+}
+
+// ════════════════════════════════════════
+// updateUI — busca elementos en el DOM directamente
+// SIN depender de variables de closure
+// ════════════════════════════════════════
+function updateUI() {
+  const steps = Array.from(document.querySelectorAll('.step'));
+  const dots = Array.from(document.querySelectorAll('.step-dot'));
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const skipBtn = document.getElementById('skipBtn');
+  const optionalBanner = document.getElementById('optionalBanner');
+  const stepLabel = document.getElementById('stepLabel');
+
+  // Mostrar el paso correcto
+  steps.forEach((s, i) => s.classList.toggle('active', i === currentStep));
+
+  // Actualizar dots
+  dots.forEach((d, i) => {
+    d.classList.toggle('active', i === currentStep);
+    d.classList.toggle('done', i < currentStep);
+  });
+
+  // Etiqueta de paso
+  if (stepLabel) {
+    stepLabel.textContent = t('stepOf').replace('{n}', currentStep + 1).replace('{total}', totalSteps);
+  }
+
+  // Botón Atrás
+  if (prevBtn) {
+    prevBtn.style.display = (currentStep === 0 || isUpdateMode) ? 'none' : 'inline-flex';
+  }
+
+  // Botón Siguiente / Guardar
+  if (nextBtn) {
+    nextBtn.textContent = isLastStep() ? t('btnSave') : t('btnNext');
+  }
+
+  // Banner y botón saltar para pasos opcionales
+  if (optionalBanner) {
+    if (isOptionalStep(currentStep) && !isUpdateMode) {
+      optionalBanner.textContent = t('optional_banner_text');
+      optionalBanner.classList.add('visible');
+      if (skipBtn) skipBtn.style.display = 'inline-flex';
+    } else {
+      optionalBanner.classList.remove('visible');
+      if (skipBtn) skipBtn.style.display = 'none';
+    }
+  }
+
+  // Nota informativa en paso 1
+  if (currentStep === 1 && !isUpdateMode) {
+    if (!document.getElementById('step1_note')) {
+      const note = document.createElement('p');
+      note.id = 'step1_note';
+      note.style.cssText = 'font-size:0.76rem;color:#065f46;background:rgba(42,198,168,0.05);border:1px solid rgba(42,198,168,0.2);border-radius:8px;padding:8px 12px;margin-bottom:14px;line-height:1.5;';
+      note.textContent = t('step_just_id');
+      const firstFieldset = steps[1] && steps[1].querySelector('fieldset');
+      if (firstFieldset) firstFieldset.before(note);
+    }
+  }
+}
+
+// validate también usa querySelector directamente
+function validate(idx) {
+  const steps = Array.from(document.querySelectorAll('.step'));
+  const step = steps[idx];
+  if (!step) return true;
+  for (const f of step.querySelectorAll('[required]')) {
+    if (f.type === 'radio') {
+      if (!Array.from(step.querySelectorAll(`input[name="${f.name}"]`)).some(r => r.checked)) return false;
+    } else if (!f.value.trim()) return false;
+  }
+  return true;
+}
+
+// Expuesta globalmente para el onclick del HTML
+window.skipOptionalStep = function() {
+  if (isLastStep()) {
+    submitForm();
+  } else {
+    currentStep++;
+    updateUI();
+  }
+};
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async function() {
+  // Detectar idioma
+  currentLang = detectLang();
+  const langSelectEl = document.getElementById('langSelect');
+  if (langSelectEl) langSelectEl.value = currentLang;
+  document.documentElement.lang = currentLang === 'va' ? 'ca' : currentLang;
+
+  // Cargar config (si falla el formulario sigue funcionando; solo el guardado en Supabase fallará)
+  await cargarConfig();
+
+  // Si es modo actualización, saltar al paso correcto
+  if (isUpdateMode && startStep > 0 && startStep < totalSteps) {
+    currentStep = startStep;
+  }
+
+  // Aplicar traducciones y renderizar UI inicial
+  applyI18n();
+  updateUI();
+
+  // Referencias a elementos del DOM
+  const form = document.getElementById('kairForm');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const statusText = document.getElementById('statusText');
+  const thankyou = document.getElementById('thankyou');
+  const navRow = document.getElementById('navRow');
+  const helpBox = document.getElementById('helpBox');
+  const safetyModal = document.getElementById('safetyModal');
+
+  // ── Botón Atrás ──────────────────────────────────────
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      if (currentStep > 0) {
+        currentStep--;
+        updateUI();
+      }
+    });
+  }
+
+  // ── Botón Siguiente / Guardar ─────────────────────────
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      // Validar campos obligatorios del paso actual
+      if (!validate(currentStep)) {
+        alert(t('alertRequired'));
+        return;
+      }
+
+      // En el paso 0 verificar que se aceptó el consentimiento
+      if (currentStep === 0) {
+        const consentVal = form.querySelector('input[name="consent"]:checked')?.value;
+        if (consentVal !== 'si') {
+          alert(t('errConsent'));
+          return;
+        }
+      }
+
+      // Último paso → guardar. Cualquier otro → avanzar.
+      if (isLastStep()) {
+        submitForm();
+      } else {
+        currentStep++;
+        updateUI();
+      }
+    });
+  }
+
+  // ── Detección de riesgo ───────────────────────────────
+  const safetyRadios = document.querySelectorAll('input[name="cse_s1"]');
+  safetyRadios.forEach(r => r.addEventListener('change', () => {
+    const v = parseInt(r.value);
+    if (helpBox) helpBox.style.display = v >= 1 ? 'block' : 'none';
+    if (safetyModal) {
+      if (v >= 1) safetyModal.classList.add('active');
+      else safetyModal.classList.remove('active');
+    }
+  }));
+
+  // ── Helpers para leer valores ─────────────────────────
+  function getVal(name) {
+    const c = form.querySelector(`input[name="${name}"]:checked`);
+    if (c) return c.value;
+    const e = form.querySelector(`#${name}`);
+    return e ? e.value : null;
+  }
+  function getCheckboxValues(name) {
+    return Array.from(form.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
+  }
+  function n(name) { return parseInt(getVal(name) || 0); }
+
+  // ════════════════════════════════════════
+  // GUARDAR PERFIL NUEVO
+  // ════════════════════════════════════════
+  async function submitForm() {
+    if (nextBtn) nextBtn.disabled = true;
+    if (prevBtn) prevBtn.disabled = true;
+    if (statusText) statusText.textContent = t('statusSaving');
+
+    // Si es modo actualización, delegar
+    if (isUpdateMode && existingUid) {
+      await submitUpdateMode(existingUid);
+      return;
+    }
+
+    const uid = document.getElementById('uid').value.trim();
+    const emailVal = document.getElementById('emailField')?.value?.trim() || null;
+
+    // Calcular puntuaciones
+    const cseScore = ['cse1','cse2','cse3','cse4','cse5','cse6','cse7','cse8','cse9','cse10','cse11','cse12'].reduce((a, k) => a + n(k), 0);
+    const ceaScore = ['cea1','cea2','cea3','cea5','cea6','cea8'].reduce((a, k) => a + n(k), 0) - ['cea4','cea7','cea9'].reduce((a, k) => a + n(k), 0);
+    const maeScore = Array.from({length: 12}, (_, i) => `mae${i+1}`).reduce((a, k) => a + n(k), 0);
+    const maeVals = {
+      naturaleza: n('mae1') + n('mae2'), intelecto: n('mae3') + n('mae4'),
+      arte: n('mae5') + n('mae6'), social: n('mae7') + n('mae8'),
+      exploracion: n('mae9') + n('mae10'), calma: n('mae11') + n('mae12')
+    };
+    const maePerfil = Object.entries(maeVals).sort((a, b) => b[1] - a[1])[0][0];
+
+    let condiciones = getCheckboxValues('condicion');
+    const condOtras = document.getElementById('cond_otras')?.value?.trim();
+    if (condOtras) condiciones.push(condOtras);
+    let medicacion = getCheckboxValues('medicacion');
+    const medOtras = document.getElementById('med_otras')?.value?.trim();
+    if (medOtras) medicacion.push(medOtras);
+
+    // Registrar qué pasos se completaron
+    const stepsCompleted = [1];
+    if (condiciones.length > 0 || condOtras) stepsCompleted.push(2);
+    if (form.querySelector('input[name="cse1"]:checked')) stepsCompleted.push(3);
+    if (form.querySelector('input[name="cpp1"]:checked')) stepsCompleted.push(4);
+    if (form.querySelector('input[name="cea1"]:checked')) stepsCompleted.push(5);
+    if (form.querySelector('input[name="mae1"]:checked')) stepsCompleted.push(6);
+
+    const trialExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
+    const payload = {
+      uid,
+      edad: parseInt(document.getElementById('edad').value || 0),
+      genero: getVal('genero'),
+      pais: document.getElementById('pais').value || null,
+      email: emailVal || null,
+      cse1: n('cse1'), cse2: n('cse2'), cse3: n('cse3'), cse4: n('cse4'),
+      cse5: n('cse5'), cse6: n('cse6'), cse7: n('cse7'), cse8: n('cse8'),
+      cse9: n('cse9'), cse10: n('cse10'), cse11: n('cse11'), cse12: n('cse12'),
+      cse_s1: n('cse_s1'), cse_total: cseScore,
+      cpp1: n('cpp1'), cpp2: n('cpp2'), cpp3: n('cpp3'), cpp4: n('cpp4'), cpp5: n('cpp5'),
+      cpp6: n('cpp6'), cpp7: n('cpp7'), cpp8: n('cpp8'), cpp9: n('cpp9'), cpp10: n('cpp10'),
+      cpp_apertura: n('cpp1') - n('cpp2'), cpp_conciencia: n('cpp3') - n('cpp4'),
+      cpp_extraversion: n('cpp5') - n('cpp6'), cpp_amabilidad: n('cpp7') - n('cpp8'),
+      cpp_neuroticismo: n('cpp10') - n('cpp9'),
+      cea1: n('cea1'), cea2: n('cea2'), cea3: n('cea3'), cea4: n('cea4'), cea5: n('cea5'),
+      cea6: n('cea6'), cea7: n('cea7'), cea8: n('cea8'), cea9: n('cea9'), cea10: n('cea10'),
+      cea_total: ceaScore,
+      mae1: n('mae1'), mae2: n('mae2'), mae3: n('mae3'), mae4: n('mae4'), mae5: n('mae5'), mae6: n('mae6'),
+      mae7: n('mae7'), mae8: n('mae8'), mae9: n('mae9'), mae10: n('mae10'), mae11: n('mae11'), mae12: n('mae12'),
+      mae_total: maeScore, mae_perfil: maePerfil,
+      condiciones_salud: condiciones.length > 0 ? condiciones : null,
+      medicacion: medicacion.length > 0 ? medicacion : null,
+      riesgo: n('cse_s1') >= 2,
+      onboarding_done: false,
+      plan: 'bloom_trial',
+      trial_expires_at: trialExpiresAt,
+      steps_completed: stepsCompleted,
+      created_at: new Date().toISOString()
+    };
+
+    try {
+      await supabaseInsert('perfiles', payload);
+      if (statusText) { statusText.textContent = t('statusOk'); statusText.classList.add('ok'); }
+      if (form) form.style.display = 'none';
+      if (navRow) navRow.style.display = 'none';
+      if (thankyou) thankyou.style.display = 'block';
+      document.getElementById('thankyouId').textContent = uid;
+      document.getElementById('thankyou_title').textContent = t('thankyou_title');
+      document.getElementById('thankyou_body1').textContent = t('thankyou_body1');
+      document.getElementById('thankyou_body2').textContent = t('thankyou_body2');
+      document.getElementById('thankyou_btn').textContent = t('thankyou_btn');
+      if (typeof umami !== 'undefined') umami.track('cuestionario_completado');
+    } catch(err) {
+      console.error(err);
+      const msg = err.message?.includes('duplicate') ? t('errDuplicate') : t('errGeneral');
+      if (statusText) { statusText.textContent = msg; statusText.classList.add('error'); }
+      if (nextBtn) nextBtn.disabled = false;
+      if (prevBtn) prevBtn.disabled = false;
+    }
+  }
+
+  // ════════════════════════════════════════
+  // ACTUALIZAR PASOS DIFERIDOS
+  // ════════════════════════════════════════
+  async function submitUpdateMode(uid) {
+    const stepNum = startStep;
+    let updateData = {};
+    const stepsCompleted = [];
+
+    if (stepNum === 2) {
+      let condiciones = getCheckboxValues('condicion');
+      const condOtras = document.getElementById('cond_otras')?.value?.trim();
+      if (condOtras) condiciones.push(condOtras);
+      let medicacion = getCheckboxValues('medicacion');
+      const medOtras = document.getElementById('med_otras')?.value?.trim();
+      if (medOtras) medicacion.push(medOtras);
+      updateData = { condiciones_salud: condiciones.length > 0 ? condiciones : null, medicacion: medicacion.length > 0 ? medicacion : null };
+      stepsCompleted.push(2);
+    } else if (stepNum === 3) {
+      const cseScore = ['cse1','cse2','cse3','cse4','cse5','cse6','cse7','cse8','cse9','cse10','cse11','cse12'].reduce((a, k) => a + n(k), 0);
+      updateData = { cse1: n('cse1'), cse2: n('cse2'), cse3: n('cse3'), cse4: n('cse4'), cse5: n('cse5'), cse6: n('cse6'), cse7: n('cse7'), cse8: n('cse8'), cse9: n('cse9'), cse10: n('cse10'), cse11: n('cse11'), cse12: n('cse12'), cse_s1: n('cse_s1'), cse_total: cseScore, riesgo: n('cse_s1') >= 2 };
+      stepsCompleted.push(3);
+    } else if (stepNum === 4) {
+      updateData = { cpp1: n('cpp1'), cpp2: n('cpp2'), cpp3: n('cpp3'), cpp4: n('cpp4'), cpp5: n('cpp5'), cpp6: n('cpp6'), cpp7: n('cpp7'), cpp8: n('cpp8'), cpp9: n('cpp9'), cpp10: n('cpp10'), cpp_apertura: n('cpp1') - n('cpp2'), cpp_conciencia: n('cpp3') - n('cpp4'), cpp_extraversion: n('cpp5') - n('cpp6'), cpp_amabilidad: n('cpp7') - n('cpp8'), cpp_neuroticismo: n('cpp10') - n('cpp9') };
+      stepsCompleted.push(4);
+    } else if (stepNum === 5) {
+      const ceaScore = ['cea1','cea2','cea3','cea5','cea6','cea8'].reduce((a, k) => a + n(k), 0) - ['cea4','cea7','cea9'].reduce((a, k) => a + n(k), 0);
+      updateData = { cea1: n('cea1'), cea2: n('cea2'), cea3: n('cea3'), cea4: n('cea4'), cea5: n('cea5'), cea6: n('cea6'), cea7: n('cea7'), cea8: n('cea8'), cea9: n('cea9'), cea10: n('cea10'), cea_total: ceaScore };
+      stepsCompleted.push(5);
+    } else if (stepNum === 6) {
+      const maeScore = Array.from({length: 12}, (_, i) => `mae${i+1}`).reduce((a, k) => a + n(k), 0);
+      const maeVals = { naturaleza: n('mae1') + n('mae2'), intelecto: n('mae3') + n('mae4'), arte: n('mae5') + n('mae6'), social: n('mae7') + n('mae8'), exploracion: n('mae9') + n('mae10'), calma: n('mae11') + n('mae12') };
+      const maePerfil = Object.entries(maeVals).sort((a, b) => b[1] - a[1])[0][0];
+      updateData = { mae1: n('mae1'), mae2: n('mae2'), mae3: n('mae3'), mae4: n('mae4'), mae5: n('mae5'), mae6: n('mae6'), mae7: n('mae7'), mae8: n('mae8'), mae9: n('mae9'), mae10: n('mae10'), mae11: n('mae11'), mae12: n('mae12'), mae_total: maeScore, mae_perfil: maePerfil };
+      stepsCompleted.push(6);
+    }
+
+    try {
+      // Obtener steps_completed actuales para hacer merge
+      const getUrl = `${SUPABASE_URL}/rest/v1/perfiles?uid=eq.${encodeURIComponent(uid)}&select=steps_completed&limit=1`;
+      const gr = await fetch(getUrl, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+      const gd = await gr.json();
+      const existing_steps = (gd && gd[0]?.steps_completed) || [];
+      const merged = [...new Set([...existing_steps, ...stepsCompleted])];
+      updateData.steps_completed = merged;
+
+      await supabaseUpdate('perfiles', {uid}, updateData);
+      if (statusText) { statusText.textContent = t('statusOk'); statusText.classList.add('ok'); }
+      if (form) form.style.display = 'none';
+      if (navRow) navRow.style.display = 'none';
+      if (thankyou) thankyou.style.display = 'block';
+      document.getElementById('thankyouId').textContent = uid;
+      document.getElementById('thankyou_title').textContent = t('thankyou_title');
+      document.getElementById('thankyou_body1').textContent = t('statusOk');
+      document.getElementById('thankyou_body2').textContent = t('thankyou_body2');
+      document.getElementById('thankyou_btn').textContent = t('thankyou_btn');
+    } catch(err) {
+      console.error(err);
+      if (statusText) { statusText.textContent = t('errGeneral'); statusText.classList.add('error'); }
+      if (nextBtn) nextBtn.disabled = false;
+    }
+  }
+
+});
+</script>
+</body>
+</html>
